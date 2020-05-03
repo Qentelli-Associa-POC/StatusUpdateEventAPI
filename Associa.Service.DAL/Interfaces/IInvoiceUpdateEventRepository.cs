@@ -8,7 +8,6 @@ namespace Associa.Service.DAL.Interfaces
 {
    public interface IInvoiceUpdateEventRepository
     {
-        Task<bool> UserExists(Guid personId);
         Task<bool> UpdateInvoiceStatus(Models.Invoice invoice);
 
         Task<bool> UpdateInvoiceTracker(InvoiceTracker invoice);

@@ -25,11 +25,11 @@ namespace StatusUpdateEventAPI.Controllers
         
         [HttpPost("updateInvoiceStatus")]
         [ActionName("updateInvoiceStatus")]
-        public async Task<IActionResult> UpdateInvoiceStatus(List<InvoiceStatusVM> invoiceList)
+        public async Task<IActionResult> UpdateInvoiceStatus([FromBody]InvoiceUpdateStatusEventVM invoiceEventVm)
         {
             try
             {
-                return Ok(await _invoiceUpdateEventLogic.UpdateInvoiceStatus(invoiceList));
+                return Ok(await _invoiceUpdateEventLogic.UpdateInvoiceStatus(invoiceEventVm.UserId, invoiceEventVm.invoiceStatusVM));
 
             }
             catch (Exception ex)

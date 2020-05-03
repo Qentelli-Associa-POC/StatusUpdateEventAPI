@@ -53,7 +53,7 @@ namespace StatusUpdateEventAPI
             services.AddAutoMapper(typeof(InvoiceUpdateEventMapper));
             services.AddControllers();
             services.AddApiVersioning();
-            services.AddCors(options => options.AddPolicy("AsociaCORSPolicy", builder =>
+            services.AddCors(options => options.AddPolicy("AsociaUpdateStatusCORSPolicy", builder =>
             {
                 builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
             }));
@@ -65,13 +65,6 @@ namespace StatusUpdateEventAPI
                     Title = "Project Associa",
                     Description = "Associa API Endpoint Specifications"
                 });
-            });
-            services.AddAuthorization(auth =>
-            {
-                auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
-                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
-                    .RequireAuthenticatedUser()
-                    .Build());
             });
             var connectionString = Configuration.GetConnectionString("AssociaContextDBString");
             services.AddEntityFrameworkNpgsql().AddDbContext<AssociaSqlContext>(opt =>
@@ -86,7 +79,7 @@ namespace StatusUpdateEventAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AssociaSqlContext context)
         {
-            app.UseCors("AsociaCORSPolicy");
+            app.UseCors("AsociaUpdateStatusCORSPolicy");
             app.UsePathBase(new PathString("/associa"));
             app.Use((context, next) =>
             {

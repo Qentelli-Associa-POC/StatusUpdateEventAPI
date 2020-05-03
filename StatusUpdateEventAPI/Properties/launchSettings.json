@@ -21,7 +21,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger/index.html",
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://localhost:58858",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -29,8 +29,15 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger/index.html",
-      "publishAllPorts": true
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "https://+:443;http://+:80",
+        "ConnectionStrings__AsscociaDBConnection": "Host=ac31d28e837324c56aeda5ea08fe8208-1260070054.us-east-2.elb.amazonaws.com;Username=invoiceadmin;Password=Asso1234cia;Database=Associa;Port=31541",
+        "ASPNETCORE_HTTPS_PORT": "44345"
+      },
+      "httpPort": 55944,
+      "sslPort": 44345,
+      "useSSL": true
     }
   }
 }
