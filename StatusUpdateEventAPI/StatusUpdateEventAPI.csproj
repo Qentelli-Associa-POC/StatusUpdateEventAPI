@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Associa.Service.BAL\Associa.Service.BAL.csproj" />
-    <ProjectReference Include="..\Associa.Service.Core\Associa.Service.Core.csproj" />
     <ProjectReference Include="..\Associa.Service.DAL\Associa.Service.DAL.csproj" />
   </ItemGroup>
 

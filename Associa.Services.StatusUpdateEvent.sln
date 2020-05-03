@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StatusUpdateEventAPI", "StatusUpdateEventAPI\StatusUpdateEventAPI.csproj", "{E6D0AC6D-78CF-4DBC-A2E9-28DB3AAF8894}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatusUpdateEventAPI", "StatusUpdateEventAPI\StatusUpdateEventAPI.csproj", "{E6D0AC6D-78CF-4DBC-A2E9-28DB3AAF8894}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Associa.Service.BAL", "Associa.Service.BAL\Associa.Service.BAL.csproj", "{9F8325E2-E2F7-4785-BCEB-D06F87FC88A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Associa.Service.BAL", "Associa.Service.BAL\Associa.Service.BAL.csproj", "{9F8325E2-E2F7-4785-BCEB-D06F87FC88A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Associa.Service.DAL", "Associa.Service.DAL\Associa.Service.DAL.csproj", "{1ABDCE05-E604-4086-AAE0-F98B60592E1A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Associa.Service.Core", "Associa.Service.Core\Associa.Service.Core.csproj", "{C4423E40-3F2B-4EEB-AFE2-2D0BA9FD21A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Associa.Service.DAL", "Associa.Service.DAL\Associa.Service.DAL.csproj", "{1ABDCE05-E604-4086-AAE0-F98B60592E1A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +27,6 @@ Global
 		{1ABDCE05-E604-4086-AAE0-F98B60592E1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ABDCE05-E604-4086-AAE0-F98B60592E1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ABDCE05-E604-4086-AAE0-F98B60592E1A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4423E40-3F2B-4EEB-AFE2-2D0BA9FD21A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4423E40-3F2B-4EEB-AFE2-2D0BA9FD21A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4423E40-3F2B-4EEB-AFE2-2D0BA9FD21A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4423E40-3F2B-4EEB-AFE2-2D0BA9FD21A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
