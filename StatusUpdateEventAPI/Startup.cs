@@ -18,8 +18,7 @@ using StatusUpdateEventAPI.Helpers;
 using Associa.Service.DAL.Models;
 using Associa.Service.DAL.Interfaces;
 using Associa.Service.DAL.Repositories;
-using Associa.Service.Core.Interfaces;
-using Associa.Service.Core.Common;
+
 using Associa.Service.BAL.Interfaces;
 using Associa.Service.BAL.BusinessLogic;
 using Associa.Service.BAL.Mappers;
@@ -80,7 +79,7 @@ namespace StatusUpdateEventAPI
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddTransient<IInvoiceUpdateEventRepository, InvoiceUpdateEventRepository>();
             services.AddTransient<IInvoiceUpdateEventLogic, InvoiceUpdateEventLogic>();
-            services.AddTransient<IIdentityToken, IdentityToken>();
+           
 
         }
 

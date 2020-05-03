@@ -24,10 +24,10 @@ namespace Associa.Service.BAL.BusinessLogic
 
         }
 
-        public async Task<bool> UpdateInvoiceStatus(List<VM.InvoiceStatusVM> invoiceStatusList, Guid personId)
+        public async Task<bool> UpdateInvoiceStatus(List<VM.InvoiceStatusVM> invoiceStatusList)
         {
-            var userExists = await _invoiceUpdateEventRepository.UserExists(personId);
-            if (userExists)
+            var personId = new Guid();
+            if (invoiceStatusList.Any())
             {
                 foreach (var invoice in invoiceStatusList)
                 {

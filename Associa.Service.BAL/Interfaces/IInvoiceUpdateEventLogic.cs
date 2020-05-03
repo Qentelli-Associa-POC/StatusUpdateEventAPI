@@ -8,6 +8,6 @@ namespace Associa.Service.BAL.Interfaces
 {
    public interface IInvoiceUpdateEventLogic
     {
-        Task<bool> UpdateInvoiceStatus(List<VM.InvoiceStatusVM> invoiceStatusList, Guid personId);
+        Task<bool> UpdateInvoiceStatus(List<VM.InvoiceStatusVM> invoiceStatusList);
     }
 }
