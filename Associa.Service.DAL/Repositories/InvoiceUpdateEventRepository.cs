@@ -12,21 +12,6 @@ namespace Associa.Service.DAL.Repositories
     public class InvoiceUpdateEventRepository : IInvoiceUpdateEventRepository
     {
 
-        public async Task<bool> UserExists(Guid personId)
-        {
-            try
-            {
-                using (var context = new AssociaSqlContext())
-                {
-                    return await context.Person.AnyAsync(x => x.PersonId == personId);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public async Task<bool> AddInvoiceTracker(List<InvoiceTracker> newInvoiceList)
         {
             using (var context = new AssociaSqlContext())
