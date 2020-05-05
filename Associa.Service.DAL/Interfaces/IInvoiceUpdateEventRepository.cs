@@ -18,11 +18,11 @@ namespace Associa.Service.DAL.Interfaces
 
         Task<bool> UpdateWorkFlowStatus(WorkFlowStatus workflow);
 
-        Task<List<WorkFlowStatus>> GetWorkFlowStatus(Guid invoiceId, Guid personId);
+        Task<List<WorkFlowStatus>> GetWorkFlowStatus(Guid invoiceId);
 
         Task<Invoice> GetInvoiceDetail(Guid invoiceId);
 
-        Task<List<InvoiceTracker>> GetInvoiceTracker(Guid invoiceId, Guid personId);
+        Task<List<InvoiceTracker>> GetInvoiceTracker(Guid invoiceId);
 
 
     }

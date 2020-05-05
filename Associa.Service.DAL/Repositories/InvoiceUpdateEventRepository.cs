@@ -56,13 +56,13 @@ namespace Associa.Service.DAL.Repositories
             }
         }
 
-        public async Task<List<WorkFlowStatus>> GetWorkFlowStatus(Guid invoiceId, Guid personId)
+        public async Task<List<WorkFlowStatus>> GetWorkFlowStatus(Guid invoiceId)
         {
             using (var context = new AssociaSqlContext())
             {
                 return await context.WorkFlowStatus
                     .Include(wf => wf.TemplateStep)
-                    .Where(wf => wf.InvoiceId == invoiceId && wf.TemplateStep.OwnerId == personId)
+                    .Where(wf => wf.InvoiceId == invoiceId)
                     .OrderBy(wf => wf.SequenceId).ToListAsync();
             }
         }
@@ -75,11 +75,11 @@ namespace Associa.Service.DAL.Repositories
             }
         }
 
-        public async Task<List<InvoiceTracker>> GetInvoiceTracker(Guid invoiceId, Guid personId)
+        public async Task<List<InvoiceTracker>> GetInvoiceTracker(Guid invoiceId)
         {
             using (var context = new AssociaSqlContext())
             {
-                return await context.InvoiceTracker.Where(i => i.InvoiceId == invoiceId && i.PersonId == personId).ToListAsync();
+                return await context.InvoiceTracker.Where(i => i.InvoiceId == invoiceId).ToListAsync();
             }
         }
     }
