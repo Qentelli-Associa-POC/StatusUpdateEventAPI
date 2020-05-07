@@ -135,7 +135,8 @@ namespace Associa.Service.BAL.BusinessLogic
             {
                 invoiceTrackerIndex = invoiceTrackerList.Count - 1;
                 invoiceTrackerList[invoiceTrackerIndex].CurrentStatus = false;
-                invoiceTrackerList[invoiceTrackerIndex].CompleteTime = DateTime.UtcNow;
+                invoiceTrackerList[invoiceTrackerIndex].CompleteTime = invoiceTrackerList[invoiceTrackerIndex].StartTime > DateTime.UtcNow 
+                    ? invoiceTrackerList[invoiceTrackerIndex].StartTime : DateTime.UtcNow;
                 invoiceTrackerList[invoiceTrackerIndex].UpdatedBy = personId;
                 invoiceTrackerList[invoiceTrackerIndex].UpdatedDate = DateTime.UtcNow;
             }
@@ -145,8 +146,9 @@ namespace Associa.Service.BAL.BusinessLogic
             newInvoiceTrackerList[0].PersonId = personId;
             newInvoiceTrackerList[0].CurrentStatus = true;
             newInvoiceTrackerList[0].InvoiceFlowStatus = invoice.Status;
-            newInvoiceTrackerList[0].StartTime = DateTime.UtcNow;
-            newInvoiceTrackerList[0].CompleteTime = DateTime.UtcNow.AddMinutes(1);
+            newInvoiceTrackerList[0].StartTime = invoiceTrackerList[invoiceTrackerIndex]?.CompleteTime > DateTime.UtcNow 
+                ? invoiceTrackerList[invoiceTrackerIndex].CompleteTime : DateTime.UtcNow;
+            newInvoiceTrackerList[0].CompleteTime = newInvoiceTrackerList[0].StartTime?.AddMinutes(1);
             newInvoiceTrackerList[0].CreatedDate = DateTime.UtcNow;
             newInvoiceTrackerList[0].CreatedBy = personId;
             newInvoiceTrackerList[0].UpdatedDate = DateTime.UtcNow;
