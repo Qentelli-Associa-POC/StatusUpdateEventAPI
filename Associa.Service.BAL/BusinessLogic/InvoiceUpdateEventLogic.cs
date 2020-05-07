@@ -148,8 +148,7 @@ namespace Associa.Service.BAL.BusinessLogic
             newInvoiceTrackerList[0].InvoiceFlowStatus = invoice.Status;
             newInvoiceTrackerList[0].StartTime = invoiceTrackerList[invoiceTrackerIndex]?.CompleteTime > DateTime.UtcNow 
                 ? invoiceTrackerList[invoiceTrackerIndex].CompleteTime : DateTime.UtcNow;
-            newInvoiceTrackerList[0].CompleteTime = newInvoiceTrackerList[0].StartTime > DateTime.UtcNow 
-                ? newInvoiceTrackerList[0].StartTime?.AddMinutes(1) : DateTime.UtcNow.AddMinutes(1);
+            newInvoiceTrackerList[0].CompleteTime = newInvoiceTrackerList[0].StartTime?.AddMinutes(1);
             newInvoiceTrackerList[0].CreatedDate = DateTime.UtcNow;
             newInvoiceTrackerList[0].CreatedBy = personId;
             newInvoiceTrackerList[0].UpdatedDate = DateTime.UtcNow;
