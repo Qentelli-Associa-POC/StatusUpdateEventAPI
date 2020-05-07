@@ -82,5 +82,20 @@ namespace Associa.Service.DAL.Repositories
                 return await context.InvoiceTracker.Where(i => i.InvoiceId == invoiceId).ToListAsync();
             }
         }
+
+        public async Task<Person> GetUserDetails(Guid userId)
+        {
+            try
+            {
+                using (var context = new AssociaSqlContext())
+                {
+                    return await context.Person.Include(x => x.Role).FirstOrDefaultAsync(x => x.PersonId == userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

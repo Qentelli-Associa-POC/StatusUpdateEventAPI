@@ -8,6 +8,8 @@ namespace Associa.Service.DAL.Models
         public Role()
         {
             Person = new HashSet<Person>();
+            TemplateStep = new HashSet<TemplateStep>();
+            TemplateStore = new HashSet<TemplateStore>();
         }
 
         public Guid RoleId { get; set; }
@@ -19,5 +21,7 @@ namespace Associa.Service.DAL.Models
         public string UpdatedBy { get; set; }
 
         public virtual ICollection<Person> Person { get; set; }
+        public virtual ICollection<TemplateStep> TemplateStep { get; set; }
+        public virtual ICollection<TemplateStore> TemplateStore { get; set; }
     }
 }

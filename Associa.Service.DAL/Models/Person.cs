@@ -7,7 +7,9 @@ namespace Associa.Service.DAL.Models
     {
         public Person()
         {
+            Invoice = new HashSet<Invoice>();
             InvoiceTracker = new HashSet<InvoiceTracker>();
+            PersonHoaMapping = new HashSet<PersonHoaMapping>();
             TemplateStep = new HashSet<TemplateStep>();
         }
 
@@ -27,7 +29,9 @@ namespace Associa.Service.DAL.Models
 
         public virtual Role Role { get; set; }
         public virtual Vendor Vendor { get; set; }
+        public virtual ICollection<Invoice> Invoice { get; set; }
         public virtual ICollection<InvoiceTracker> InvoiceTracker { get; set; }
+        public virtual ICollection<PersonHoaMapping> PersonHoaMapping { get; set; }
         public virtual ICollection<TemplateStep> TemplateStep { get; set; }
     }
 }
