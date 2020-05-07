@@ -7,7 +7,6 @@ namespace Associa.Service.DAL.Models
     {
         public Vendor()
         {
-            Invoice = new HashSet<Invoice>();
             VendorHoaMapping = new HashSet<VendorHoaMapping>();
         }
 
@@ -20,7 +19,6 @@ namespace Associa.Service.DAL.Models
         public Guid? UpdatedBy { get; set; }
 
         public virtual Person VendorNavigation { get; set; }
-        public virtual ICollection<Invoice> Invoice { get; set; }
         public virtual ICollection<VendorHoaMapping> VendorHoaMapping { get; set; }
     }
 }

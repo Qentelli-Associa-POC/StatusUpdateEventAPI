@@ -20,6 +20,7 @@ namespace Associa.Service.DAL.Models
         public virtual DbSet<InvoiceTracker> InvoiceTracker { get; set; }
         public virtual DbSet<InvoiceType> InvoiceType { get; set; }
         public virtual DbSet<Person> Person { get; set; }
+        public virtual DbSet<PersonHoaMapping> PersonHoaMapping { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<TemplateMapping> TemplateMapping { get; set; }
         public virtual DbSet<TemplateStep> TemplateStep { get; set; }
@@ -62,6 +63,8 @@ namespace Associa.Service.DAL.Models
 
                 entity.Property(e => e.CreatedDate).HasColumnType("timestamp with time zone");
 
+                entity.Property(e => e.InvoiceNumber).ValueGeneratedOnAdd();
+
                 entity.Property(e => e.UpdatedDate).HasColumnType("timestamp with time zone");
 
                 entity.HasOne(d => d.Hoa)
@@ -80,7 +83,7 @@ namespace Associa.Service.DAL.Models
                     .WithMany(p => p.Invoice)
                     .HasForeignKey(d => d.VendorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("InvoiceVendorIdFkey");
+                    .HasConstraintName("InvoiceVendorIdWithPersonIdFkey");
             });
 
             modelBuilder.Entity<InvoiceTracker>(entity =>
@@ -144,6 +147,25 @@ namespace Associa.Service.DAL.Models
                     .HasConstraintName("PersonRoleFkey");
             });
 
+            modelBuilder.Entity<PersonHoaMapping>(entity =>
+            {
+                entity.ToTable("PersonHoaMapping", "InvoiceApproval");
+
+                entity.Property(e => e.PersonHoaMappingId).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Hoa)
+                    .WithMany(p => p.PersonHoaMapping)
+                    .HasForeignKey(d => d.HoaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("HoaMappingHoaFkey");
+
+                entity.HasOne(d => d.Person)
+                    .WithMany(p => p.PersonHoaMapping)
+                    .HasForeignKey(d => d.PersonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("PersonHoaMappingHoaIdFkey");
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.ToTable("Role", "InvoiceApproval");
@@ -186,6 +208,9 @@ namespace Associa.Service.DAL.Models
             {
                 entity.ToTable("TemplateStep", "InvoiceApproval");
 
+                entity.HasIndex(e => e.RoleId)
+                    .HasName("fki_RoleId_TemplateStep_Role");
+
                 entity.Property(e => e.TemplateStepId).ValueGeneratedNever();
 
                 entity.Property(e => e.CreatedBy).IsRequired();
@@ -200,11 +225,19 @@ namespace Associa.Service.DAL.Models
                     .WithMany(p => p.TemplateStep)
                     .HasForeignKey(d => d.OwnerId)
                     .HasConstraintName("TemplateStepOwnerIdFkey");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.TemplateStep)
+                    .HasForeignKey(d => d.RoleId)
+                    .HasConstraintName("RoleId_TemplateStep_Role");
             });
 
             modelBuilder.Entity<TemplateStore>(entity =>
             {
                 entity.ToTable("TemplateStore", "InvoiceApproval");
+
+                entity.HasIndex(e => e.RoleId)
+                    .HasName("fki_RoleId_TemplateStore_Role");
 
                 entity.Property(e => e.TemplateStoreId).ValueGeneratedNever();
 
@@ -217,6 +250,11 @@ namespace Associa.Service.DAL.Models
                     .HasForeignKey(d => d.InvoiceTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("TemplateStoreInvoiceTypeFkey");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.TemplateStore)
+                    .HasForeignKey(d => d.RoleId)
+                    .HasConstraintName("RoleId_TemplateStore_Role");
             });
 
             modelBuilder.Entity<Vendor>(entity =>

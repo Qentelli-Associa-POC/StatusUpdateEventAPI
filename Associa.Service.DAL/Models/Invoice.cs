@@ -23,10 +23,11 @@ namespace Associa.Service.DAL.Models
         public DateTime UpdatedDate { get; set; }
         public Guid? UpdatedBy { get; set; }
         public string Status { get; set; }
+        public int InvoiceNumber { get; set; }
 
         public virtual Hoa Hoa { get; set; }
         public virtual InvoiceType InvoiceType { get; set; }
-        public virtual Vendor Vendor { get; set; }
+        public virtual Person Vendor { get; set; }
         public virtual ICollection<InvoiceTracker> InvoiceTracker { get; set; }
         public virtual ICollection<WorkFlowStatus> WorkFlowStatus { get; set; }
     }

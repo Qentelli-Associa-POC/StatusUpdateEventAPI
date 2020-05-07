@@ -19,8 +19,11 @@ namespace Associa.Service.DAL.Models
         public Guid? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public Guid? UpdatedBy { get; set; }
+        public string UploadedBy { get; set; }
+        public Guid? RoleId { get; set; }
 
         public virtual InvoiceType InvoiceType { get; set; }
+        public virtual Role Role { get; set; }
         public virtual ICollection<TemplateMapping> TemplateMapping { get; set; }
     }
 }

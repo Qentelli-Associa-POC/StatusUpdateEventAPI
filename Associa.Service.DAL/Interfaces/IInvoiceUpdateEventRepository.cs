@@ -23,7 +23,6 @@ namespace Associa.Service.DAL.Interfaces
         Task<Invoice> GetInvoiceDetail(Guid invoiceId);
 
         Task<List<InvoiceTracker>> GetInvoiceTracker(Guid invoiceId);
-
-
+        Task<Person> GetUserDetails(Guid userId);
     }
 }
