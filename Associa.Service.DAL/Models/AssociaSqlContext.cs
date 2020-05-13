@@ -34,7 +34,7 @@ namespace Associa.Service.DAL.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseNpgsql("Host=a3c21f756ae3043e0a22a9d4036448c5-2126734940.us-east-2.elb.amazonaws.com;Username=invoiceadmin;Password=Asso1234cia;Database=Associa;Port=31541");
+                optionsBuilder.UseNpgsql("Host=a66c589266d2e4247bfa6cca967e4ebd-795134233.us-east-2.elb.amazonaws.com;Username=invoiceadmin;Password=Login@123;Database=Associa;Port=31541");
             }
         }
 
