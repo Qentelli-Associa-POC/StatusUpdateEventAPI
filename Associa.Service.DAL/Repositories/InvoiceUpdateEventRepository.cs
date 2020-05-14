@@ -71,7 +71,9 @@ namespace Associa.Service.DAL.Repositories
         {
             using (var context = new AssociaSqlContext())
             {
-                return await context.Invoice.Where(i => i.InvoiceId == invoiceId).FirstOrDefaultAsync();
+                return await context.Invoice.Where(i => i.InvoiceId == invoiceId)
+                    .Include(i => i.WorkFlowStatus)
+                        .ThenInclude(wf => wf.TemplateStep).FirstOrDefaultAsync();
             }
         }
 

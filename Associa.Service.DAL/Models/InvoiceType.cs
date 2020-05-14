@@ -7,6 +7,7 @@ namespace Associa.Service.DAL.Models
     {
         public InvoiceType()
         {
+            EventTransactionMapping = new HashSet<EventTransactionMapping>();
             Invoice = new HashSet<Invoice>();
             TemplateStore = new HashSet<TemplateStore>();
             WorkFlowStatus = new HashSet<WorkFlowStatus>();
@@ -21,6 +22,7 @@ namespace Associa.Service.DAL.Models
         public DateTime UpdatedDate { get; set; }
         public Guid? UpdatedBy { get; set; }
 
+        public virtual ICollection<EventTransactionMapping> EventTransactionMapping { get; set; }
         public virtual ICollection<Invoice> Invoice { get; set; }
         public virtual ICollection<TemplateStore> TemplateStore { get; set; }
         public virtual ICollection<WorkFlowStatus> WorkFlowStatus { get; set; }
