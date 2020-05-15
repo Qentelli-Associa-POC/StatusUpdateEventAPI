@@ -78,10 +78,18 @@ namespace StatusUpdateEventAPI
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AssociaSqlContext context)
         {
             app.UseCors("AsociaUpdateStatusCORSPolicy");
+            app.UsePathBase(new PathString("/status-update"));
+            app.Use((httpContext, next) =>
+            {
+                httpContext.Request.PathBase = new PathString("/status-update");
+
+                return next();
+            });
             app.UseSwagger(c =>
             {
                 c.RouteTemplate = "swagger/{documentName}/swagger.json";
             });
+
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("./v1/swagger.json", "Associa Services");
