@@ -5,15 +5,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using StatusUpdateEventAPI.Helpers;
 using Associa.Service.DAL.Models;
 using Associa.Service.DAL.Interfaces;
@@ -53,9 +50,10 @@ namespace StatusUpdateEventAPI
             services.AddAutoMapper(typeof(InvoiceUpdateEventMapper));
             services.AddControllers();
             services.AddApiVersioning();
+            string[] origins = new string[] { "localhost", "a397bd7ce721a4a76a62148748d33d39-6b4f9c9b8e85415c.elb.us-east-2.amazonaws.com" };
             services.AddCors(options => options.AddPolicy("AsociaUpdateStatusCORSPolicy", builder =>
             {
-                builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+                builder.WithOrigins(origins).AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
             }));
             services.AddSwaggerGen(c =>
             {
@@ -63,7 +61,7 @@ namespace StatusUpdateEventAPI
                 {
                     Version = "v1",
                     Title = "Project Associa",
-                    Description = "Associa API Endpoint Specifications"
+                    Description = "Associa Update Status API Endpoint Specifications"
                 });
             });
             var connectionString = Configuration.GetConnectionString("AssociaContextDBString");
@@ -80,15 +78,21 @@ namespace StatusUpdateEventAPI
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AssociaSqlContext context)
         {
             app.UseCors("AsociaUpdateStatusCORSPolicy");
-            app.UsePathBase(new PathString("/associa"));
-            app.Use((context, next) =>
+            app.UsePathBase(new PathString("/status-update"));
+            app.Use((httpContext, next) =>
             {
-                context.Request.PathBase = new PathString("/associa");
+                httpContext.Request.PathBase = new PathString("/status-update");
+
                 return next();
-            }).UseSwagger();
+            });
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "swagger/{documentName}/swagger.json";
+            });
+
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/associa/swagger/v1/swagger.json", "MyAPI");
+                c.SwaggerEndpoint("./v1/swagger.json", "Associa Services");
             });
             app.UseHttpsRedirection();
             app.UseRouting();
