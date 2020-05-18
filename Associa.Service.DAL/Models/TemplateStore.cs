@@ -21,6 +21,8 @@ namespace Associa.Service.DAL.Models
         public Guid? UpdatedBy { get; set; }
         public string UploadedBy { get; set; }
         public Guid? RoleId { get; set; }
+        public string Segment { get; set; }
+        public string Parameter { get; set; }
 
         public virtual InvoiceType InvoiceType { get; set; }
         public virtual Role Role { get; set; }

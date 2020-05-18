@@ -8,6 +8,7 @@ namespace Associa.Service.DAL.Models
         public Invoice()
         {
             InvoiceTracker = new HashSet<InvoiceTracker>();
+            InvoiceWorkFlow = new HashSet<InvoiceWorkFlow>();
             WorkFlowStatus = new HashSet<WorkFlowStatus>();
         }
 
@@ -29,6 +30,7 @@ namespace Associa.Service.DAL.Models
         public virtual InvoiceType InvoiceType { get; set; }
         public virtual Person Vendor { get; set; }
         public virtual ICollection<InvoiceTracker> InvoiceTracker { get; set; }
+        public virtual ICollection<InvoiceWorkFlow> InvoiceWorkFlow { get; set; }
         public virtual ICollection<WorkFlowStatus> WorkFlowStatus { get; set; }
     }
 }

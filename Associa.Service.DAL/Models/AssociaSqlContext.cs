@@ -15,10 +15,14 @@ namespace Associa.Service.DAL.Models
         {
         }
 
+        public virtual DbSet<EventTransactionMapping> EventTransactionMapping { get; set; }
+        public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<Hoa> Hoa { get; set; }
         public virtual DbSet<Invoice> Invoice { get; set; }
         public virtual DbSet<InvoiceTracker> InvoiceTracker { get; set; }
         public virtual DbSet<InvoiceType> InvoiceType { get; set; }
+        public virtual DbSet<InvoiceWorkFlow> InvoiceWorkFlow { get; set; }
+        public virtual DbSet<InvoiceWorkflowStatus> InvoiceWorkflowStatus { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<PersonHoaMapping> PersonHoaMapping { get; set; }
         public virtual DbSet<Role> Role { get; set; }
@@ -27,6 +31,7 @@ namespace Associa.Service.DAL.Models
         public virtual DbSet<TemplateStore> TemplateStore { get; set; }
         public virtual DbSet<Vendor> Vendor { get; set; }
         public virtual DbSet<VendorHoaMapping> VendorHoaMapping { get; set; }
+        public virtual DbSet<WorkFlowMaster> WorkFlowMaster { get; set; }
         public virtual DbSet<WorkFlowStatus> WorkFlowStatus { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -41,6 +46,49 @@ namespace Associa.Service.DAL.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("uuid-ossp");
+
+            modelBuilder.Entity<EventTransactionMapping>(entity =>
+            {
+                entity.ToTable("EventTransactionMapping", "InvoiceApproval");
+
+                entity.HasIndex(e => e.EventId)
+                    .HasName("fki_FK_Events_Id");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Parameter).HasColumnType("character varying");
+
+                entity.Property(e => e.SegmentCondition).HasColumnType("character varying");
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.EventTransactionMapping)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("EventTransactionMappingEventIdFkey");
+
+                entity.HasOne(d => d.Hoa)
+                    .WithMany(p => p.EventTransactionMapping)
+                    .HasForeignKey(d => d.HoaId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("EventTransactionMappingHoaIdFkey");
+
+                entity.HasOne(d => d.WorkflowCategoryNavigation)
+                    .WithMany(p => p.EventTransactionMapping)
+                    .HasForeignKey(d => d.WorkflowCategory)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("EventTransactionMappingInvoiceTypeFkey");
+            });
+
+            modelBuilder.Entity<Events>(entity =>
+            {
+                entity.ToTable("Events", "InvoiceApproval");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Code).IsRequired();
+
+                entity.Property(e => e.Procedure).IsRequired();
+            });
 
             modelBuilder.Entity<Hoa>(entity =>
             {
@@ -128,6 +176,40 @@ namespace Associa.Service.DAL.Models
                 entity.Property(e => e.Name).IsRequired();
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("timestamp with time zone");
+            });
+
+            modelBuilder.Entity<InvoiceWorkFlow>(entity =>
+            {
+                entity.ToTable("InvoiceWorkFlow", "InvoiceApproval");
+
+                entity.HasIndex(e => e.InvoiceId)
+                    .HasName("fki_fk_InvoiceWorkFlow_invoiceId");
+
+                entity.HasIndex(e => e.WorkFlowMasterId)
+                    .HasName("fki_fk_InvoiceWorkFlow_WorkFlowMasterId");
+
+                entity.Property(e => e.InvoiceWorkFlowId).ValueGeneratedNever();
+
+                entity.Property(e => e.Sequence).HasColumnType("numeric");
+
+                entity.HasOne(d => d.Invoice)
+                    .WithMany(p => p.InvoiceWorkFlow)
+                    .HasForeignKey(d => d.InvoiceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_InvoiceWorkFlow_invoiceId");
+
+                entity.HasOne(d => d.WorkFlowMaster)
+                    .WithMany(p => p.InvoiceWorkFlow)
+                    .HasForeignKey(d => d.WorkFlowMasterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fk_InvoiceWorkFlow_WorkFlowMasterId");
+            });
+
+            modelBuilder.Entity<InvoiceWorkflowStatus>(entity =>
+            {
+                entity.ToTable("InvoiceWorkflowStatus", "InvoiceApproval");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -297,6 +379,13 @@ namespace Associa.Service.DAL.Models
                     .HasForeignKey(d => d.VendorId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("VendorHoaMappingVendorIdFkey");
+            });
+
+            modelBuilder.Entity<WorkFlowMaster>(entity =>
+            {
+                entity.ToTable("WorkFlowMaster", "InvoiceApproval");
+
+                entity.Property(e => e.WorkFlowMasterId).ValueGeneratedNever();
             });
 
             modelBuilder.Entity<WorkFlowStatus>(entity =>

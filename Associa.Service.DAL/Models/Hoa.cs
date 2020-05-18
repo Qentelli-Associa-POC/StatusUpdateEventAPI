@@ -7,6 +7,7 @@ namespace Associa.Service.DAL.Models
     {
         public Hoa()
         {
+            EventTransactionMapping = new HashSet<EventTransactionMapping>();
             Invoice = new HashSet<Invoice>();
             PersonHoaMapping = new HashSet<PersonHoaMapping>();
             VendorHoaMapping = new HashSet<VendorHoaMapping>();
@@ -20,6 +21,7 @@ namespace Associa.Service.DAL.Models
         public DateTime UpdatedDate { get; set; }
         public Guid? UpdatedBy { get; set; }
 
+        public virtual ICollection<EventTransactionMapping> EventTransactionMapping { get; set; }
         public virtual ICollection<Invoice> Invoice { get; set; }
         public virtual ICollection<PersonHoaMapping> PersonHoaMapping { get; set; }
         public virtual ICollection<VendorHoaMapping> VendorHoaMapping { get; set; }

@@ -34,7 +34,6 @@ namespace Associa.Service.BAL.BusinessLogic
         {
             _invoiceUpdateEventRepository = invoiceRepository;
             _mapper = mapper;
-
         }
 
         public async Task<bool> UpdateInvoiceStatus(Guid personId, List<VM.InvoiceStatusVM> invoiceStatusList)
@@ -44,71 +43,60 @@ namespace Associa.Service.BAL.BusinessLogic
                 foreach (var invoice in invoiceStatusList)
                 {
                     var user = await _invoiceUpdateEventRepository.GetUserDetails(personId);
-                    var workFlowStatus = await _invoiceUpdateEventRepository.GetWorkFlowStatus(invoice.Id);
                     var invoiceDetail = await _invoiceUpdateEventRepository.GetInvoiceDetail(invoice.Id);
+                    var workFlowStatus = invoiceDetail.WorkFlowStatus?.ToList();
                     var newInvoiceTrackerList = new List<DM.InvoiceTracker>
                     {
                         new DM.InvoiceTracker()
                     };
                     var isL2ApprovalRequired = false;
-                    var isWorkFlowUpdated = false;
-                    if (!workFlowStatus.Any() || invoiceDetail == null) continue;
-                    if (workFlowStatus.Count == 1 && workFlowStatus.Any(wf => wf.TemplateStep.RoleId == user.Role.RoleId))
+                    if (workFlowStatus == null) continue;
+                    for (var i = 0; i < workFlowStatus.Count; i++)
                     {
-                        workFlowStatus[0].Status = invoice.Status;
-                        newInvoiceTrackerList[0].OutcomeStatus = user.Role.RoleName.ToLower() == BOARD_MEMBER
-                            ? string.Concat(invoice.Status, BY_BOARD_MEMBER) : string.Concat(invoice.Status, BY_CAM);
-                        newInvoiceTrackerList[0].Status = string.Concat(invoice.Status, L1);
-                        isWorkFlowUpdated = await UpdateWorkFlowStatus(workFlowStatus[0], personId);
-                        if (isWorkFlowUpdated)
-                        {
-                            await UpdateInvoiceStatus(invoiceDetail, invoice, personId);
-                        }
-                    }
-                    else if (workFlowStatus.Count > 1 && workFlowStatus[0].Status == PENDING && workFlowStatus[0].TemplateStep.RoleId == user.Role.RoleId)
-                    {
-                        workFlowStatus[0].Status = invoice.Status;
-                        newInvoiceTrackerList[0].OutcomeStatus = string.Concat(invoice.Status, BY_CAM);
-                        newInvoiceTrackerList[0].Status = string.Concat(invoice.Status, L1);
+                        if (workFlowStatus[i].Status != PENDING ||
+                            workFlowStatus[i].TemplateStep.RoleId != user.Role.RoleId) continue;
+                        var currentApprover = i + 1;
+                        workFlowStatus[i].Status = invoice.Status;
+                        workFlowStatus[i].UpdatedBy = personId;
+                        workFlowStatus[i].UpdatedDate = DateTime.UtcNow;
+                        newInvoiceTrackerList[0].OutcomeStatus = invoice.Status + " By " + user.Role.RoleName;
+                        newInvoiceTrackerList[0].Status = invoice.Status + " L" + currentApprover;
 
-                        if (invoice.Status == APPROVED)
+                        switch (invoice.Status)
                         {
-                            isL2ApprovalRequired = true;
-                            isWorkFlowUpdated = await UpdateWorkFlowStatus(workFlowStatus[0], personId);
-                        }
-                        else if (invoice.Status == REJECTED)
-                        {
-                            workFlowStatus[1].Status = NOT_APPLICABLE;
-                            workFlowStatus[1].UpdatedBy = personId;
-                            workFlowStatus[1].UpdatedDate = DateTime.UtcNow;
-                            isWorkFlowUpdated = await _invoiceUpdateEventRepository.UpdateWorkFlowStatusList(workFlowStatus);
-                            if (isWorkFlowUpdated)
+                            case APPROVED:
+                                isL2ApprovalRequired = i < workFlowStatus.Count - 1;
+                                break;
+                            case REJECTED when i < workFlowStatus.Count - 1:
                             {
+                                for (var j = i + 1; j < workFlowStatus.Count; j++)
+                                {
+                                    workFlowStatus[j].Status = NOT_APPLICABLE;
+                                    workFlowStatus[j].UpdatedBy = personId;
+                                    workFlowStatus[j].UpdatedDate = DateTime.UtcNow;
+                                }
+
                                 await UpdateInvoiceStatus(invoiceDetail, invoice, personId);
+                                break;
                             }
                         }
-                    }
-                    else if (workFlowStatus.Count > 1 && workFlowStatus[0].Status == APPROVED && workFlowStatus[1].TemplateStep.RoleId == user.Role.RoleId)
-                    {
-                        workFlowStatus[1].Status = invoice.Status;
-                        newInvoiceTrackerList[0].Status = string.Concat(invoice.Status, L2);
-                        newInvoiceTrackerList[0].OutcomeStatus = string.Concat(invoice.Status, BY_BOARD_MEMBER); isWorkFlowUpdated = await UpdateWorkFlowStatus(workFlowStatus[1], personId);
-                        if (isWorkFlowUpdated)
+
+                        var isWorkFlowUpdated =
+                            await _invoiceUpdateEventRepository.UpdateWorkFlowStatusList(workFlowStatus);
+                        if (!isWorkFlowUpdated) continue;
+                        await InsertUpdateInvoiceTracker(newInvoiceTrackerList, invoice,
+                            user, currentApprover, isL2ApprovalRequired);
+                        if (i == workFlowStatus.Count - 1)
                         {
                             await UpdateInvoiceStatus(invoiceDetail, invoice, personId);
                         }
-                    }
-
-                    if (isWorkFlowUpdated)
-                    {
-                        await InsertUpdateInvoiceTracker(newInvoiceTrackerList, invoice, personId, isL2ApprovalRequired);
                     }
                 }
 
                 return true;
             }
-            else
-                throw new Exception("User doesn't exists");
+            
+            throw new Exception("User doesn't exists");
         }
 
         public async Task<bool> UpdateWorkFlowStatus(DM.WorkFlowStatus workFlowStatus, Guid personId)
@@ -126,7 +114,7 @@ namespace Associa.Service.BAL.BusinessLogic
             return await _invoiceUpdateEventRepository.UpdateInvoiceStatus(oldInvoice);
         }
 
-        public async Task<bool> InsertUpdateInvoiceTracker(List<DM.InvoiceTracker> newInvoiceTrackerList, VM.InvoiceStatusVM invoice, Guid personId, bool isL2ApprovalRequired = false)
+        public async Task<bool> InsertUpdateInvoiceTracker(List<DM.InvoiceTracker> newInvoiceTrackerList, VM.InvoiceStatusVM invoice, DM.Person user, int currentApprover, bool isL2ApprovalRequired = false)
         {
             var invoiceTrackerList = await _invoiceUpdateEventRepository.GetInvoiceTracker(invoice.Id);
             var invoiceTrackerIndex = 0;
@@ -136,42 +124,43 @@ namespace Associa.Service.BAL.BusinessLogic
                 invoiceTrackerList[invoiceTrackerIndex].CurrentStatus = false;
                 invoiceTrackerList[invoiceTrackerIndex].CompleteTime = invoiceTrackerList[invoiceTrackerIndex].StartTime > DateTime.UtcNow 
                     ? invoiceTrackerList[invoiceTrackerIndex].StartTime : DateTime.UtcNow;
-                invoiceTrackerList[invoiceTrackerIndex].UpdatedBy = personId;
+                invoiceTrackerList[invoiceTrackerIndex].UpdatedBy = user.PersonId;
                 invoiceTrackerList[invoiceTrackerIndex].UpdatedDate = DateTime.UtcNow;
             }
 
             newInvoiceTrackerList[0].InvoiceTrackerId = Guid.NewGuid();
             newInvoiceTrackerList[0].InvoiceId = invoice.Id;
-            newInvoiceTrackerList[0].PersonId = personId;
+            newInvoiceTrackerList[0].PersonId = user.PersonId;
             newInvoiceTrackerList[0].CurrentStatus = true;
             newInvoiceTrackerList[0].InvoiceFlowStatus = invoice.Status;
             newInvoiceTrackerList[0].StartTime = invoiceTrackerList[invoiceTrackerIndex]?.CompleteTime > DateTime.UtcNow 
                 ? invoiceTrackerList[invoiceTrackerIndex].CompleteTime : DateTime.UtcNow;
             newInvoiceTrackerList[0].CompleteTime = newInvoiceTrackerList[0].StartTime?.AddMinutes(1);
             newInvoiceTrackerList[0].CreatedDate = DateTime.UtcNow;
-            newInvoiceTrackerList[0].CreatedBy = personId;
+            newInvoiceTrackerList[0].CreatedBy = user.PersonId;
             newInvoiceTrackerList[0].UpdatedDate = DateTime.UtcNow;
-            newInvoiceTrackerList[0].UpdatedBy = personId;
+            newInvoiceTrackerList[0].UpdatedBy = user.PersonId;
             newInvoiceTrackerList[0].Sequence = invoiceTrackerList.Any() ? invoiceTrackerList.Count + 1 : 1;
 
             if (isL2ApprovalRequired)
             {
-                newInvoiceTrackerList[0].InvoiceFlowStatus = AWAITING_APPROVER_2;
+                currentApprover += 1;
+                newInvoiceTrackerList[0].InvoiceFlowStatus = "Awaiting Approver " + currentApprover;
                 newInvoiceTrackerList[0].CurrentStatus = false;
                 newInvoiceTrackerList.Add(new DM.InvoiceTracker()
                 {
                     InvoiceTrackerId = Guid.NewGuid(),
                     InvoiceId = invoice.Id,
-                    PersonId = personId,
+                    PersonId = user.PersonId,
                     CurrentStatus = true,
-                    Status = IN_REVIEW_L2,
-                    InvoiceFlowStatus = AWAITING_APPROVER_2,
-                    OutcomeStatus = string.Concat(invoice.Status, BY_CAM),
+                    Status = "In Review L" + currentApprover,
+                    InvoiceFlowStatus = "Awaiting Approver " + currentApprover,
+                    OutcomeStatus = invoice.Status + " By " + user.Role.RoleName,
                     StartTime = newInvoiceTrackerList[0].CompleteTime,
                     CreatedDate = DateTime.UtcNow,
-                    CreatedBy = personId,
+                    CreatedBy = user.PersonId,
                     UpdatedDate = DateTime.UtcNow,
-                    UpdatedBy = personId,
+                    UpdatedBy = user.PersonId,
                     Sequence = newInvoiceTrackerList[0].Sequence + 1
                 });
             }
