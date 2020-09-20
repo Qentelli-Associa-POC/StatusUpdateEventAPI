@@ -50,7 +50,7 @@ namespace StatusUpdateEventAPI
             services.AddAutoMapper(typeof(InvoiceUpdateEventMapper));
             services.AddControllers();
             services.AddApiVersioning();
-            string[] origins = new string[] { "localhost", "a397bd7ce721a4a76a62148748d33d39-6b4f9c9b8e85415c.elb.us-east-2.amazonaws.com" };
+            string[] origins = new string[] { "localhost", "ae559145148674de98b30fbd20eb2e3a-b2aad68415df95b6.elb.us-east-2.amazonaws.com" };
             services.AddCors(options => options.AddPolicy("AsociaUpdateStatusCORSPolicy", builder =>
             {
                 builder.WithOrigins(origins).AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
